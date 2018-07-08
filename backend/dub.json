@@ -1,0 +1,12 @@
+{
+	"name": "RedKangaroo-Daemon",
+	"authors": [
+		"JonMagon (Dmitry Sidorov)"
+	],
+	"description": "RedKangaroo daemon on D",
+	"copyright": "Copyright © 2018, JonMagon (Dmitry Sidorov)",
+	"license": "MIT",
+	"dependencies": {
+		"mysql-native": "~>2.2.2"
+	}
+}
