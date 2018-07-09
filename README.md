@@ -9,9 +9,15 @@
 * [Precompiled binaries](https://github.com/JonMagon/RedKangaroo/releases)
 
 ## Server side configuration
+|Section: `RedKangaroo`|Type     |Default value|
+|----------------------|---------|-------------|
+|`host`                |`string` |`"0.0.0.0"`  |
+|`port`                |`number` |`19000`      |
+|`key`                 |`string` |`"your_key"` |
+|`allowGetInfo`        |`boolean`|`true`       |
+
 |Section: `services`|Type    |Default value|
 |-------------------|--------|-------------|
-|`RedKangarooPort`  |`number`|`19000`      |
 |`gdeliverydPort`   |`number`|`29100`      |
 |`gamedbdPort`      |`number`|`29400`      |
 
@@ -35,7 +41,7 @@ dub build --build=release
 ```
 
 ## Usage
-Just run RedKangaroo-Daemon
+Just run `redkangaroo-daemon`
 
 ## TODO
 
@@ -50,3 +56,5 @@ Project: mysql-native (https://github.com/mysql-d/mysql-native)
 Copyright (c) Nick Sabalausky (https://github.com/Abscissa)  
 License (BSL-1.0)
 
+Project: vibe.d (https://github.com/vibe-d/vibe.d)  
+Copyright (c) 2012-2018 RejectedSoftware e.K.

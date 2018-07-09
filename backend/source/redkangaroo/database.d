@@ -4,17 +4,25 @@ import std.conv;
 import std.typecons;
 import std.stdio;
 import std.string;
+import std.variant;
 import mysql;
 
-public class MySQLConnector {
+import redkangaroo.config;
+
+class Database {
 private:
-	Connection conn;
+	static Connection conn;
 	
 public:
-	this(string host, int port, string user, string password, string basename) {
+	static void Instance() {
 		conn = new Connection(
-			format("host=%s;port=%d;user=%s;%pwd=%s;db=%s",
-			host, port, user, password, basename));
+			format("host=%s;port=%d;user=%s;pwd=%s;db=%s",
+					Config.MySQL.host,
+					Config.MySQL.port,
+					Config.MySQL.user,
+					Config.MySQL.password,
+					Config.MySQL.database)
+		);
 		scope(exit) conn.close();
 	}
 }

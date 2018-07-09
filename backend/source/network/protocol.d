@@ -1,12 +1,7 @@
-module gauthd.protocol;
-
-import std.stdio;
+module network.protocol;
 
 import std.algorithm.mutation;
-
-public uint calcSession(uint session) {
-	return session - 2147483647;
-}
+import std.stdio;
 
 public class ReadPacket {
 private:

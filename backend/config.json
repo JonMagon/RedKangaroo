@@ -1,0 +1,19 @@
+{
+	"RedKangaroo": {
+		"host": "0.0.0.0",
+		"port": 30001,
+		"key": "MI%l2CFl~UKG}7NL#eTS",
+		"allowGetInfo": true
+	},
+	"services": {
+		"gdeliverydPort": 29100,
+		"gamedbdPort": 29400
+	},
+	"mysql": {
+		"host": "0.0.0.0",
+		"port": 3306,
+		"user": "root",
+		"password": "tERATu23Qe",
+		"database": "pw"
+	}
+}
