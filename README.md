@@ -46,15 +46,16 @@ Just run `redkangaroo-daemon`
 ## TODO
 
 ## Credits
-This application uses Open Source components and free resources. You can find the source code of their open source projects along with license information below. We acknowledge and are grateful to these developers for their contributions to open source.
+This application uses Open Source components. You can find the source code of their open source projects along with license information below. We acknowledge and are grateful to these developers for their contributions to open source.
 
 Image: Kangaroo shape  
 Copyright (c) https://www.flaticon.com/  
 Flaticon Basic License
 
-Project: mysql-native (https://github.com/mysql-d/mysql-native)  
-Copyright (c) Nick Sabalausky (https://github.com/Abscissa)  
-License (BSL-1.0)
-
 Project: vibe.d (https://github.com/vibe-d/vibe.d)  
-Copyright (c) 2012-2018 RejectedSoftware e.K.
+Copyright (c) 2012-2018 RejectedSoftware e.K.  
+License (MIT)
+
+Project: mysql-native (https://github.com/mysql-d/mysql-native)  
+Copyright (c) 2011-2017 Steve Teale, James W. Oliphant, Simen Endsjø, Sönke Ludwig, Sergey Shamov, and Nick Sabalausky  
+License (BSL-1.0)

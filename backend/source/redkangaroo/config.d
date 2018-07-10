@@ -3,9 +3,7 @@ module redkangaroo.config;
 import std.conv;
 import std.file;
 import std.json;
-import core.exception;
-
-import redkangaroo.exceptions;
+import vibe.core.log;
 
 class Config {
 	public:
@@ -33,6 +31,8 @@ class Config {
 		}
 
 		static void Instance(string fileName) {
+			import core.exception : RangeError;
+			
 			try {
 				auto content = to!string(read(fileName));
 
@@ -52,11 +52,18 @@ class Config {
 				MySQL.password = json.object["mysql"].object["password"].str;
 				MySQL.database = json.object["mysql"].object["database"].str;
 			}
-			catch (JSONException) {
-				throw new ConfigLoadException(fileName);
+			catch (FileException e) {
+				logFatal("Exception thrown for file I/O errors.", fileName);
+				throw e;
 			}
-			catch (RangeError) {
-				throw new ConfigLoadException(fileName);
+			catch (RangeError e) {
+				logFatal("The lack of the needed elements is detected in the configuration file.\n" ~
+						 "Please, update the file from the repository.");
+				throw e;
+			}
+			catch (Exception e) {
+				logFatal("Invalid %s file. Please correct it and try again.", fileName);
+				throw e;
 			}
 		}
 }

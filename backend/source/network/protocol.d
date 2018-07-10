@@ -66,29 +66,29 @@ public:
 
 public class WritePacket {
 private:
-	ubyte[131072] data;
+	ubyte[] data;
 	uint pos;
 	
 public:
 	
 	void WriteUInt(uint val) {
-		data[pos .. (pos += uint.sizeof)] = reverse((cast(ubyte*) &val)[0 .. uint.sizeof]);
+		data ~= reverse((cast(ubyte*) &val)[0 .. uint.sizeof]);
 	}
 	
 	void WriteUShort(ushort val) {
-		data[pos .. (pos += ushort.sizeof)] = reverse((cast(ubyte*) &val)[0 .. ushort.sizeof]);
+		data ~= reverse((cast(ubyte*) &val)[0 .. ushort.sizeof]);
 	}
 	
 	void WriteString(string val) {
 		auto val_length = val.length;
 		WriteCUInt(*cast(ushort*) &val_length);
-		data[pos .. (pos += val.length)] = cast(ubyte[]) (val.dup);
+		data ~= cast(ubyte[]) (val.dup);
 	}
 	
 	void WriteOctets(ubyte[] val) {
 		auto val_length = val.length;
 		WriteCUInt(*cast(ushort*) &val_length);
-		data[pos .. (pos += val.length)] = val;
+		data ~= val;
 	}
 	
 	void WriteUByte(ubyte val) {

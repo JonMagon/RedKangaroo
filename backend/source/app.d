@@ -3,6 +3,7 @@ import std.conv;
 import std.file;
 import std.stdio;
 
+
 import network.protocol;
 
 import redkangaroo.database;
@@ -19,24 +20,26 @@ void main() {
 		writeln("You can't use big-endian processor.");
 		return;
 	}
+
+	setLogFile(getcwd() ~ "/global.log");
 	
 	Config.Instance(getcwd() ~ "/config.json");
 	Database.Instance();
 	
 	// Start web server
 	
-    auto router = new URLRouter;
-    router.registerWebInterface(new WebService);
-    
+	auto router = new URLRouter;
+	router.registerWebInterface(new WebService);
+	
 	if (Config.RedKangaroo.allowGetInfo)
 		router.get("/info", &getInfo);
 
-    auto settings = new HTTPServerSettings;
-    settings.sessionStore = new MemorySessionStore;
-    settings.port = Config.RedKangaroo.port;
+	auto settings = new HTTPServerSettings;
+	settings.sessionStore = new MemorySessionStore;
+	settings.port = Config.RedKangaroo.port;
 	settings.bindAddresses = [Config.RedKangaroo.host];
+
+	listenHTTP(settings, router);
 	
-    listenHTTP(settings, router);
-	
-    runApplication();
+	runApplication();
 }
