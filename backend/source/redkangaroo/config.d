@@ -36,29 +36,40 @@ class Config {
 			try {
 				auto content = to!string(read(fileName));
 
-				JSONValue json = parseJSON(content).object;
+				JSONValue json = parseJSON(content);
 
-				RedKangaroo.host         = json.object["RedKangaroo"].object["host"].str;
-				RedKangaroo.port         = to!ushort(json.object["RedKangaroo"].object["port"].integer);
-				RedKangaroo.key          = json.object["RedKangaroo"].object["key"].str;
-				RedKangaroo.allowGetInfo = json.object["RedKangaroo"].object["allowGetInfo"].type == JSON_TYPE.TRUE;
+				RedKangaroo.host         = json["RedKangaroo"]["host"].str;
+				RedKangaroo.port         = to!ushort(json["RedKangaroo"]["port"].integer);
+				RedKangaroo.key          = json["RedKangaroo"]["key"].str;
+				RedKangaroo.allowGetInfo = json["RedKangaroo"]["allowGetInfo"].type == JSON_TYPE.TRUE;
 
-				Services.gdeliverydPort = to!int(json.object["services"].object["gdeliverydPort"].integer);
-				Services.gamedbdPort    = to!int(json.object["services"].object["gamedbdPort"].integer);
+				Services.gdeliverydPort = to!int(json["services"]["gdeliverydPort"].integer);
+				Services.gamedbdPort    = to!int(json["services"]["gamedbdPort"].integer);
 
-				MySQL.host     = json.object["mysql"].object["host"].str;
-				MySQL.port     = to!int(json.object["mysql"].object["port"].integer);
-				MySQL.user     = json.object["mysql"].object["user"].str;
-				MySQL.password = json.object["mysql"].object["password"].str;
-				MySQL.database = json.object["mysql"].object["database"].str;
+				MySQL.host     = json["mysql"]["host"].str;
+				MySQL.port     = to!int(json["mysql"]["port"].integer);
+				MySQL.user     = json["mysql"]["user"].str;
+				MySQL.password = json["mysql"]["password"].str;
+				MySQL.database = json["mysql"]["database"].str;
+				
+				if (RedKangaroo.key.length == 0) {
+					import std.uuid;
+					
+					RedKangaroo.key = randomUUID().toString();
+					json["RedKangaroo"]["key"].str = RedKangaroo.key;
+					
+					write(fileName, json.toPrettyString());
+					
+					logInfo("The new key is generated: %s", RedKangaroo.key);
+				}
 			}
 			catch (FileException e) {
-				logFatal("Exception thrown for file I/O errors.", fileName);
+				logFatal("Exception thrown for file I/O errors.");
 				throw e;
 			}
 			catch (RangeError e) {
-				logFatal("The lack of the needed elements is detected in the configuration file.\n" ~
-						 "Please, update the file from the repository.");
+				logFatal("The lack of the needed elements is detected in the configuration file. " ~
+						 "Please update the file from the repository.");
 				throw e;
 			}
 			catch (Exception e) {

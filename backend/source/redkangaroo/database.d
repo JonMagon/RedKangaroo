@@ -5,6 +5,7 @@ import std.typecons;
 import std.stdio;
 import std.string;
 import std.variant;
+import vibe.core.log;
 import mysql;
 
 import redkangaroo.config;
@@ -15,14 +16,19 @@ private:
 	
 public:
 	static void Instance() {
-		conn = new Connection(
-			format("host=%s;port=%d;user=%s;pwd=%s;db=%s",
-					Config.MySQL.host,
-					Config.MySQL.port,
-					Config.MySQL.user,
-					Config.MySQL.password,
-					Config.MySQL.database)
-		);
-		scope(exit) conn.close();
+		try {
+			conn = new Connection(
+				format("host=%s;port=%d;user=%s;pwd=%s;db=%s",
+						Config.MySQL.host,
+						Config.MySQL.port,
+						Config.MySQL.user,
+						Config.MySQL.password,
+						Config.MySQL.database)
+			);
+		}
+		catch (Exception e) {
+			logFatal(e.msg);
+			throw e;
+		}
 	}
 }

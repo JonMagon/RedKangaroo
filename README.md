@@ -34,10 +34,10 @@
 - [DUB](https://github.com/dlang/dub)
 
 **Build**
-```
-git clone https://github.com/JonMagon/RedKangaroo
-cd RedKangaroo/backend
-dub build --build=release
+```bash
+$ git clone https://github.com/JonMagon/RedKangaroo
+$ cd RedKangaroo/backend
+$ dub build --build=release
 ```
 
 ## Usage
