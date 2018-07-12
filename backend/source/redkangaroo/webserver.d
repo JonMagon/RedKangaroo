@@ -4,6 +4,7 @@ import vibe.d;
 import vibe.core.log;
 import redkangaroo.config;
 
+import api.system;
 import api.user;
 
 class WebServer {
@@ -34,6 +35,7 @@ public:
 		route.any("*", &checkRequest);
 		
 		// Interfaces
+		registerRestInterface(route, new APISystem());
 		registerRestInterface(route, new APIUser());
 
 		route.any("*", &unspecifiedRoute);

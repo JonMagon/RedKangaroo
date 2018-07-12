@@ -15,7 +15,7 @@
 |`port`                |`number` |`19000`       |
 |`token`               |`string` |`"your_token"`|
 |`allowGetInfo`        |`boolean`|`true`        |
-- Leave a field `token` empty if you don't care about that field. It will be automatically filled in.
+* Leave a field `token` empty if you don't care about that field. It will be automatically filled in.
 
 |Section: `services`|Type    |Default value|
 |-------------------|--------|-------------|
