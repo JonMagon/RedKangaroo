@@ -5,11 +5,12 @@ import vibe.web.rest;
 
 @path("/user")
 interface IAPIUser {
-	Json get();
+@safe:
+	Json getName(int id);
 }
 
 class APIUser : IAPIUser {
-	Json get() {
-		return serializeToJson(["foo": 42, "bar": 13]);
+	Json getName(int id) {
+		return serializeToJson(["foo": id, "bar": 13]);
 	}
 }

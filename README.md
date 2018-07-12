@@ -9,12 +9,13 @@
 * [Precompiled binaries](https://github.com/JonMagon/RedKangaroo/releases)
 
 ## Server side configuration
-|Section: `RedKangaroo`|Type     |Default value|
-|----------------------|---------|-------------|
-|`host`                |`string` |`"0.0.0.0"`  |
-|`port`                |`number` |`19000`      |
-|`key`                 |`string` |`"your_key"` |
-|`allowGetInfo`        |`boolean`|`true`       |
+|Section: `RedKangaroo`|Type     |Default value |
+|----------------------|---------|--------------|
+|`host`                |`string` |`"0.0.0.0"`   |
+|`port`                |`number` |`19000`       |
+|`token`               |`string` |`"your_token"`|
+|`allowGetInfo`        |`boolean`|`true`        |
+- Leave a field `token` empty if you don't care about that field. It will be automatically filled in.
 
 |Section: `services`|Type    |Default value|
 |-------------------|--------|-------------|
@@ -31,7 +32,7 @@
 
 ## Manual installation
 **Requirements**
-- [DUB](https://github.com/dlang/dub)
+* [DUB](https://github.com/dlang/dub)
 
 **Build**
 ```bash
