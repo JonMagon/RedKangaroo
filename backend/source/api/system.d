@@ -7,12 +7,11 @@ import vibe.web.rest;
 @path("/system")
 interface IAPISystem {
 @safe:
-	Json getGSInstances();
+	Json getInstances();
 }
 
 class APISystem : IAPISystem {
-	@path("gs_instances")
-	Json getGSInstances() {
+	Json getInstances() {
 		import std.process : executeShell;
 		
 		Json instances = Json.emptyObject;

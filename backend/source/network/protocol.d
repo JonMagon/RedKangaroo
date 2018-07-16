@@ -1,131 +1,70 @@
+/*
+ * I'll keep working on this.
+ */
+
 module network.protocol;
 
-import std.algorithm.mutation;
-import std.stdio;
+import std.bitmanip;
+import std.range.primitives;
+import std.utf;
+import std.conv;
 
-public class ReadPacket {
-private:
-	ubyte[] data;
-	uint pos;
-
-public:
-	this(ubyte[] _data) {
-		data = _data;
-	}
-
-	@property ulong Length() { return data.length; }
-	//@property int data(int value) { return m_data = value; }
-
-	void Seek(uint count) {
-		pos += count;
-	}
-
-	ubyte[] ReadBytes(uint length) {
-		return data[pos .. (pos += length)];
-	}
-
-	uint ReadCUInt() {
-		char code = ReadUByte();
-		switch (code & 0xE0)
-		{
-			case 0x0E:
-				return ReadUInt();
+struct CUInt {
+	uint value;
+	
+	this(R)(auto ref R rng) if (isInputRange!R && is(ElementType!R : const(ubyte))) {
+		auto code = rng.peek!ubyte;
+		switch (code & 0xE0) {
+			case 0xE0:
+				rng.read!ubyte;
+				alue = rng.read!uint;
+				break;
 			case 0xC0:
-				pos -= 1;
-				return ReadUInt() & 0x1FFFFFFF;
+				value = rng.read!uint & 0x1FFFFFFF;
+				break;
 			case 0x80:
 			case 0xA0:
-				pos -= 1;
-				return ReadUShort() & 0x3FFF;
+				value = rng.read!ushort & 0x3FFF;
+				break;
 			default:
-				return code;
+				value = rng.read!ubyte;
+				break;
 		}
 	}
-
-	ubyte[] ReadOctets() {
-		uint length = ReadCUInt();
-		return data[pos .. (pos += length)];
-	}
-
-	string ReadString() {
-		return (cast(char[]) ReadOctets()).idup;
-	}
-
-	uint ReadUInt() {
-		return *cast(uint*) reverse(data[pos .. (pos += 4)]);
-	}
-
-	ushort ReadUShort() {
-		return *cast(ushort*) reverse(data[pos .. (pos += 2)]);
-	}
-
-	ubyte ReadUByte() {
-		return data[pos++];
+	
+	this(R)(R rng, int val) if (isOutputRange!(R, ubyte)) {
+		if (val <= 0x7F)
+			rng.append!ubyte(*cast(ubyte*) &val);
+		else if (val < 0x3FFF) {
+			auto val_ = *cast(ushort*) &val;
+			val_ |= 0x8000;
+			rng.append!ushort(val_);
+		}
+		else if (val <= 0x1FFFFFFF)
+			rng.append!uint(val | 0xC0000000);
+		else {
+			rng.append!ubyte(0xE0);
+			rng.append!uint(val);
+		}
 	}
 }
 
-public class WritePacket {
-private:
-	ubyte[] data;
-	uint pos;
+alias read = std.bitmanip.read;
+alias append = std.bitmanip.append;
 
-public:
+uint read(T : CUInt, R)(auto ref R range) @trusted
+if (isInputRange!R && is(ElementType!R : const(ubyte))) {
+	return CUInt(range).value;
+}
 
-	void WriteUInt(uint val) {
-		data ~= reverse((cast(ubyte*) &val)[0 .. uint.sizeof]);
-	}
+void append(T : CUInt, R)(R range, uint value) @trusted
+if (isOutputRange!(R, ubyte)) {
+	CUInt(range, value);
+}
 
-	void WriteUShort(ushort val) {
-		data ~= reverse((cast(ubyte*) &val)[0 .. ushort.sizeof]);
-	}
-
-	void WriteString(string val) {
-		auto val_length = val.length;
-		WriteCUInt(*cast(ushort*) &val_length);
-		data ~= cast(ubyte[]) (val.dup);
-	}
-
-	void WriteOctets(ubyte[] val) {
-		auto val_length = val.length;
-		WriteCUInt(*cast(ushort*) &val_length);
-		data ~= val;
-	}
-
-	void WriteUByte(ubyte val) {
-		data[pos++] = val;
-	}
-
-	void WriteCUInt(uint val) {
-		if (val < 127)
-			WriteUByte(*cast(ubyte*) &val);
-		else if (val < 16383)
-			WriteUShort((*cast(ushort*) &val) | 0x8000);
-	}
-
-	ubyte[] Pack(ushort opcode) {
-		uint cursor;
-		ubyte[] _tosend;
-		_tosend.length = 131072;
-
-		if (opcode < 127)
-			_tosend[cursor++] = *cast(ubyte*) &opcode;
-		else if (opcode < 16383) {
-			auto opcode_modified = (*cast(ushort*) &opcode) | 0x8000;
-			_tosend[cursor .. (cursor += ushort.sizeof)] = reverse((cast(ubyte*) &opcode_modified)[0 .. ushort.sizeof]);
-		}
-
-		if (pos < 127)
-			_tosend[cursor++] = *cast(ubyte*) &pos;
-		else if (opcode < 16383) {
-			auto opcode_modified = (*cast(ushort*) &opcode) | 0x8000;
-			_tosend[cursor .. (cursor += ushort.sizeof)] = reverse((cast(ubyte*) &opcode_modified)[0 .. ushort.sizeof]);
-		}
-
-		_tosend[cursor .. cursor + pos] = data[0 .. pos];
-
-		// http://ddili.org/ders/d.en/formatted_output.html
-		writefln("From: %(%02x %)", _tosend[0 .. cursor + pos]);
-
-		return _tosend[0 .. cursor + pos];
-	}
+void append(T : string, R)(R range, string value) @trusted
+if (isOutputRange!(R, ubyte)) {
+	ubyte[] bytes = cast(ubyte[]) value.toUTF16;
+	CUInt(range, to!uint(bytes.length));
+	put(range, bytes);
 }

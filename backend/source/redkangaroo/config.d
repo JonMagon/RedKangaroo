@@ -64,7 +64,7 @@ public:
 			}
 		}
 		catch (FileException e) {
-			logFatal("Exception thrown for file I/O errors.");
+			logFatal("File %s not found or no read permission.", fileName);
 			throw e;
 		}
 		catch (RangeError e) {

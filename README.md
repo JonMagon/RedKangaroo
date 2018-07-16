@@ -13,7 +13,7 @@
 |----------------------|---------|--------------|
 |`host`                |`string` |`"0.0.0.0"`   |
 |`port`                |`number` |`19000`       |
-|`token`               |`string` |`"your_token"`|
+|`token`               |`string` |`""`          |
 |`allowGetInfo`        |`boolean`|`true`        |
 * Leave a field `token` empty if you don't care about that field. It will be automatically filled in.
 
@@ -40,11 +40,17 @@ $ git clone https://github.com/JonMagon/RedKangaroo
 $ cd RedKangaroo/backend
 $ dub build --build=release
 ```
-
 ## Usage
 Just run `redkangaroo-daemon`
 
 ## TODO
+
+## Special Thanks
+* Vladislav Pavlov (werewolf)
+* Alexander Karaev ([Smertig](https://github.com/Smertig))
+
+Thanks to everyone who has posted great ideas, suggestions, and bug reports on issue trackers, forums, and via Discord.
+Thanks to all users for supporting the project.
 
 ## Credits
 This application uses Open Source components. You can find the source code of their open source projects along with license information below. We acknowledge and are grateful to these developers for their contributions to open source.

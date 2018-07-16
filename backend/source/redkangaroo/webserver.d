@@ -10,10 +10,11 @@ import api.user;
 class WebServer {
 private:
 	void checkRequest(HTTPServerRequest req, HTTPServerResponse) {
+		// TODO: I need to protect this place
 		if (req.headers.get("Token") != Config.RedKangaroo.token) {
 			logError("[IP: %s]: Invalid token.",
 				req.clientAddress.toAddressString(), req.requestURI);
-			throw new HTTPStatusException(HTTPStatus.unauthorized);
+			throw new HTTPStatusException(HTTPStatus.Forbidden);
 		}
 	}
 	
@@ -50,20 +51,3 @@ public:
 		runApplication();
 	}
 }
-
-/*
-void getInfo(HTTPServerRequest req, HTTPServerResponse res) {
-	import std.datetime;
-	import std.digest.sha;
-	import std.conv;
-    
-	ubyte[32] hash256 = sha256Of(
-		Config.RedKangaroo.key ~
-		to!string(
-			dur!"seconds"(
-				Clock.currTime(UTC()).toUnixTime()
-			).total!"minutes"
-		)
-	);
-	res.writeBody(toHexString(hash256));
-}*/
