@@ -9,13 +9,19 @@
 * [Precompiled binaries](https://github.com/JonMagon/RedKangaroo/releases)
 
 ## Server side configuration
-|Section: `RedKangaroo`|Type     |Default value |
-|----------------------|---------|--------------|
-|`host`                |`string` |`"0.0.0.0"`   |
-|`port`                |`number` |`19000`       |
-|`token`               |`string` |`""`          |
-|`allowGetInfo`        |`boolean`|`true`        |
+|Section: `RedKangaroo`|Type     |Default value|
+|----------------------|---------|-------------|
+|`host`                |`string` |`"0.0.0.0"`  |
+|`port`                |`number` |`19000`      |
+|`token`               |`string` |`""`         |
+|`stepWindow`          |`number` |`30`         |
+|`previousFrames`      |`numer`  |`1`          |
+|`futureFrames`        |`number` |`1`          |
+|`allowGetInfo`        |`boolean`|`true`       |
 * Leave a field `token` empty if you don't care about that field. It will be automatically filled in.
+* Don't change fields `stepWindow`, `previousFrames` and `futureFrames` if you don't know what they mean.
+	* Ideally the client and server times should be in sync.
+	* It's not recommended to provide any value other than the default.
 
 |Section: `services`|Type    |Default value|
 |-------------------|--------|-------------|

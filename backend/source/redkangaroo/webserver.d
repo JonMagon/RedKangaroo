@@ -3,6 +3,7 @@ module redkangaroo.webserver;
 import vibe.d;
 import vibe.core.log;
 import redkangaroo.config;
+import redkangaroo.security;
 
 import api.system;
 import api.user;
@@ -10,11 +11,10 @@ import api.user;
 class WebServer {
 private:
 	void checkRequest(HTTPServerRequest req, HTTPServerResponse) {
-		// TODO: I need to protect this place
-		if (req.headers.get("Token") != Config.RedKangaroo.token) {
+		if (!new OTP().checkToken(req.headers.get("Token"))) {
 			logError("[IP: %s]: Invalid token.",
 				req.clientAddress.toAddressString(), req.requestURI);
-			throw new HTTPStatusException(HTTPStatus.Forbidden);
+			throw new HTTPStatusException(HTTPStatus.forbidden);
 		}
 	}
 	

@@ -12,6 +12,9 @@ public:
 			string host;
 			ushort port;
 			string token;
+			int stepWindow;
+			int previousFrames;
+			int futureFrames;
 			bool allowGetInfo;
 	}
 
@@ -38,10 +41,13 @@ public:
 
 			JSONValue json = parseJSON(content);
 
-			RedKangaroo.host         = json["RedKangaroo"]["host"].str;
-			RedKangaroo.port         = to!ushort(json["RedKangaroo"]["port"].integer);
-			RedKangaroo.token        = json["RedKangaroo"]["token"].str;
-			RedKangaroo.allowGetInfo = json["RedKangaroo"]["allowGetInfo"].type == JSON_TYPE.TRUE;
+			RedKangaroo.host           = json["RedKangaroo"]["host"].str;
+			RedKangaroo.port           = to!ushort(json["RedKangaroo"]["port"].integer);
+			RedKangaroo.token          = json["RedKangaroo"]["token"].str;
+			RedKangaroo.stepWindow     = to!int(json["RedKangaroo"]["stepWindow"].integer);
+			RedKangaroo.previousFrames = to!int(json["RedKangaroo"]["previousFrames"].integer);
+			RedKangaroo.futureFrames   = to!int(json["RedKangaroo"]["futureFrames"].integer);
+			RedKangaroo.allowGetInfo   = json["RedKangaroo"]["allowGetInfo"].type == JSON_TYPE.TRUE;
 
 			Services.gdeliverydPort = to!int(json["services"]["gdeliverydPort"].integer);
 			Services.gamedbdPort    = to!int(json["services"]["gamedbdPort"].integer);
@@ -60,21 +66,21 @@ public:
 
 				write(fileName, json.toPrettyString());
 
-				logInfo("The new token is generated: %s", RedKangaroo.token);
+				logInfo("The new token was generated: %s", RedKangaroo.token);
 			}
 		}
 		catch (FileException e) {
 			logFatal("File %s not found or no read permission.", fileName);
-			throw e;
+			assert(0);
 		}
 		catch (RangeError e) {
 			logFatal("The lack of the needed elements is detected in the configuration file. " ~
 					 "Please update the file from the repository.");
-			throw e;
+			assert(0);
 		}
 		catch (Exception e) {
 			logFatal("Invalid %s file. Please correct it and try again.", fileName);
-			throw e;
+			assert(0);
 		}
 	}
 }

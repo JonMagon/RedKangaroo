@@ -50,12 +50,13 @@ struct CUInt {
 }
 
 alias read = std.bitmanip.read;
-alias append = std.bitmanip.append;
 
 uint read(T : CUInt, R)(auto ref R range) @trusted
 if (isInputRange!R && is(ElementType!R : const(ubyte))) {
 	return CUInt(range).value;
 }
+
+alias append = std.bitmanip.append;
 
 void append(T : CUInt, R)(R range, uint value) @trusted
 if (isOutputRange!(R, ubyte)) {

@@ -28,7 +28,7 @@ public:
 		}
 		catch (Exception e) {
 			logFatal(e.msg);
-			throw e;
+			assert(0);
 		}
 	}
 	
