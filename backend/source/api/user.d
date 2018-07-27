@@ -1,6 +1,5 @@
 module api.user;
 
-import std.array : appender;
 import vibe.data.json;
 import vibe.web.rest;
 import network.protocol;
@@ -19,12 +18,25 @@ class APIUser : IAPIUser {
 	
 	// /user/id?name=kek
 	Json getID(string name) {
-		auto GetPlayerIDByName = appender!(const ubyte[])();
-		GetPlayerIDByName.append!CUInt(2);
-		GetPlayerIDByName.append!string(name);
-		GetPlayerIDByName.append!uint(0); // localsid
-		GetPlayerIDByName.append!ubyte(0); // reason
+		@packet(0x214)
+		struct GetPlayerIDByName {
+			string name = "kek";
+			uint localsid = 0;
+			ubyte reason = 0;
+			@pw(156) {
+				uint allahu = 129;
+				uint sex = 2;
+			}
+			string shmek = "cheburek";
+			@pw(153) uint vah = 13;
+		}
+		
+		GetPlayerIDByName packet;
+		
+		sendPacket(packet);
 		
 		return serializeToJson(name);
 	}
+	
+
 }

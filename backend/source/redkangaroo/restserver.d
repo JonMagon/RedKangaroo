@@ -1,4 +1,4 @@
-module redkangaroo.webserver;
+module redkangaroo.restserver;
 
 import vibe.d;
 import vibe.core.log;
@@ -8,10 +8,10 @@ import redkangaroo.security;
 import api.system;
 import api.user;
 
-class WebServer {
+class RESTServer {
 private:
 	static void checkRequest(HTTPServerRequest req, HTTPServerResponse) {
-		if (Config.RedKangaroo.allowGetInfo) {
+		/*if (Config.RedKangaroo.allowGetInfo) {
 			logFatal("The request was rejected. " ~
 				"It needs to set the value of allowGetInfo to false.");
 			throw new HTTPStatusException(HTTPStatus.internalServerError);
@@ -21,7 +21,10 @@ private:
 			logError("[IP: %s]: Invalid token.",
 				req.clientAddress.toAddressString(), req.requestURI);
 			throw new HTTPStatusException(HTTPStatus.forbidden);
-		}
+		}*/
+		
+		
+		// DEBUG !
 	}
 	
 	static void getInfo(HTTPServerRequest, HTTPServerResponse res) {
@@ -53,11 +56,6 @@ private:
 	
 public:
 	static void Instance() {
-		/*
-		 * I have no idea how to make it better with routes
-		 * HTTPServerSettings.errorPageHandler doesn't working
-		 */
-		
 		auto router = new URLRouter;
 		
 		router.any("/info", &getInfo);

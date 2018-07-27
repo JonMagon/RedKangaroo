@@ -50,6 +50,7 @@ $ dub build --build=release
 Just run `redkangaroo-daemon`
 
 ## TODO
+* Runtime memory patching
 
 ## Special Thanks
 * Vladislav Pavlov (werewolf)

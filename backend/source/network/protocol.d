@@ -9,6 +9,32 @@ import std.range.primitives;
 import std.utf;
 import std.conv;
 
+static void sendPacket(T)(T packet) { 
+	import std.stdio;
+	import std.array : appender;
+	
+	writeln(__traits(getAttributes, T));
+
+	auto outPacket = appender!(const ubyte[])();
+	foreach (i, ref part; packet.tupleof) {
+		enum attributes = __traits(getAttributes, packet.tupleof[i]);
+		if (attributes.length > 0)
+			foreach (attr; attributes) // wtf?
+				writefln("%d - %d", attr.min, attr.max);
+		outPacket.append!(typeof(part))(part);
+	}
+	writeln(outPacket.data);
+}
+
+struct pw {
+	int min;
+	int max;
+}
+
+struct packet {
+	uint opcode;
+}
+
 struct CUInt {
 	uint value;
 	
@@ -51,21 +77,29 @@ struct CUInt {
 
 alias read = std.bitmanip.read;
 
-uint read(T : CUInt, R)(auto ref R range) @trusted
+@trusted uint read(T : CUInt, R)(auto ref R range) 
 if (isInputRange!R && is(ElementType!R : const(ubyte))) {
 	return CUInt(range).value;
 }
 
 alias append = std.bitmanip.append;
 
-void append(T : CUInt, R)(R range, uint value) @trusted
+@trusted void append(T : CUInt, R)(R range, uint value)
 if (isOutputRange!(R, ubyte)) {
 	CUInt(range, value);
 }
 
-void append(T : string, R)(R range, string value) @trusted
+@trusted void append(T : string, R)(R range, string value)
 if (isOutputRange!(R, ubyte)) {
 	ubyte[] bytes = cast(ubyte[]) value.toUTF16;
 	CUInt(range, to!uint(bytes.length));
 	put(range, bytes);
+}
+
+// сейчас только для байт сделать, потом передалать для любого массива
+// но для любого ещё и CUInt писать впереди
+
+@trusted void append(T : T[], R)(R range, T[] value)
+if (isOutputRange!(R, ubyte)) {
+	put(range, value);
 }
