@@ -16,27 +16,15 @@ class APIUser : IAPIUser {
 		return serializeToJson(["foo": id, "bar": 13]);
 	}
 	
-	// /user/id?name=kek
-	Json getID(string name) {
-		@packet(0x214)
-		struct GetPlayerIDByName {
-			string name = "kek";
-			uint localsid = 0;
-			ubyte reason = 0;
-			@pw(156) {
-				uint allahu = 129;
-				uint sex = 2;
-			}
-			string shmek = "cheburek";
-			@pw(153) uint vah = 13;
-		}
+	Json getID(string rolename) {
+		import network.gnet.GetPlayerIDByName;
 		
-		GetPlayerIDByName packet;
+		GetPlayerIDByName request = {
+			rolename: rolename
+		};
 		
-		sendPacket(packet);
+		sendPacket(request);
 		
-		return serializeToJson(name);
+		return serializeToJson(rolename);
 	}
-	
-
 }

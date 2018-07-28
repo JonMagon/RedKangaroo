@@ -12,27 +12,64 @@ import std.conv;
 static void sendPacket(T)(T packet) { 
 	import std.stdio;
 	import std.array : appender;
-	
-	writeln(__traits(getAttributes, T));
+	import redkangaroo.config;
 
+	auto packetAttributes = __traits(getAttributes, T)[0];
+	auto opcode = packetAttributes.opcode;
+	auto service = packetAttributes.service;
+	
 	auto outPacket = appender!(const ubyte[])();
 	foreach (i, ref part; packet.tupleof) {
 		enum attributes = __traits(getAttributes, packet.tupleof[i]);
-		if (attributes.length > 0)
-			foreach (attr; attributes) // wtf?
-				writefln("%d - %d", attr.min, attr.max);
-		outPacket.append!(typeof(part))(part);
+		
+		if (attributes.length > 0) {
+			foreach (attr; attributes)
+				if (is(typeof(attr) == pwbuild)) {
+					if (attr.min <= Config.Services.pwbuild
+						&& (attr.max == 0 || Config.Services.pwbuild <= attr.max))
+						outPacket.append!(typeof(part))(part);
+					break;
+				}
+		}
+		else outPacket.append!(typeof(part))(part);
 	}
-	writeln(outPacket.data);
+	
+	auto wrap = appender!(const ubyte[])();
+	wrap.append!CUInt(opcode);
+	wrap.append!CUInt(to!uint(outPacket.data.length));
+		
+	writeln(wrap.data ~ outPacket.data);
+	
+	import std.socket, std.stdio;
+	
+	ubyte[128 * 1024] buffer;
+	
+	auto socket = new Socket(AddressFamily.INET,  SocketType.STREAM);
+	socket.connect(new InternetAddress("localhost", 29100));
+	scope(exit) {
+		socket.shutdown(SocketShutdown.BOTH);
+		socket.close();
+	}
+	
+	if (service == gdeliveryd) socket.receive(buffer);
+	
+	socket.send(wrap.data ~ outPacket.data);
+	
+	writeln(buffer[0 .. socket.receive(buffer)]);
 }
 
-struct pw {
+// Services
+enum int gdeliveryd = 0x01;
+enum int gamedbd = 0x02;
+
+struct pwbuild {
 	int min;
 	int max;
 }
 
 struct packet {
 	uint opcode;
+	int service;
 }
 
 struct CUInt {
@@ -58,7 +95,7 @@ struct CUInt {
 		}
 	}
 	
-	this(R)(R rng, int val) if (isOutputRange!(R, ubyte)) {
+	this(R)(R rng, uint val) if (isOutputRange!(R, ubyte)) {
 		if (val <= 0x7F)
 			rng.append!ubyte(*cast(ubyte*) &val);
 		else if (val < 0x3FFF) {
@@ -95,9 +132,6 @@ if (isOutputRange!(R, ubyte)) {
 	CUInt(range, to!uint(bytes.length));
 	put(range, bytes);
 }
-
-// сейчас только для байт сделать, потом передалать для любого массива
-// но для любого ещё и CUInt писать впереди
 
 @trusted void append(T : T[], R)(R range, T[] value)
 if (isOutputRange!(R, ubyte)) {

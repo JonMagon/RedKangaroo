@@ -9,6 +9,7 @@
 		"allowGetInfo": true
 	},
 	"services": {
+		"pwbuild": 156,
 		"gdeliverydPort": 29100,
 		"gamedbdPort": 29400
 	},

@@ -20,6 +20,7 @@ public:
 
 	struct Services {
 		static:
+			int pwbuild;
 			int gdeliverydPort;
 			int gamedbdPort;
 	}
@@ -49,6 +50,7 @@ public:
 			RedKangaroo.futureFrames   = to!int(json["RedKangaroo"]["futureFrames"].integer);
 			RedKangaroo.allowGetInfo   = json["RedKangaroo"]["allowGetInfo"].type == JSON_TYPE.TRUE;
 
+			Services.pwbuild        = to!int(json["services"]["pwbuild"].integer);
 			Services.gdeliverydPort = to!int(json["services"]["gdeliverydPort"].integer);
 			Services.gamedbdPort    = to!int(json["services"]["gamedbdPort"].integer);
 
