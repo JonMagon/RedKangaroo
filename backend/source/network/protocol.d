@@ -9,7 +9,7 @@ import std.range.primitives;
 import std.utf;
 import std.conv;
 
-static void sendPacket(T)(T packet) { 
+static void sendPacket(T)(T request) { 
 	import std.stdio;
 	import std.array : appender;
 	import redkangaroo.config;
@@ -19,20 +19,10 @@ static void sendPacket(T)(T packet) {
 	auto service = packetAttributes.service;
 	
 	auto outPacket = appender!(const ubyte[])();
-	foreach (i, ref part; packet.tupleof) {
-		enum attributes = __traits(getAttributes, packet.tupleof[i]);
-		
-		if (attributes.length > 0) {
-			foreach (attr; attributes)
-				if (is(typeof(attr) == pwbuild)) {
-					if (attr.min <= Config.Services.pwbuild
-						&& (attr.max == 0 || Config.Services.pwbuild <= attr.max))
-						outPacket.append!(typeof(part))(part);
-					break;
-				}
-		}
-		else outPacket.append!(typeof(part))(part);
-	}
+	
+	if (service == gamedbd) outPacket.append!int(-1);
+	
+	marshal(outPacket, request);
 	
 	auto wrap = appender!(const ubyte[])();
 	wrap.append!CUInt(opcode);
@@ -45,7 +35,7 @@ static void sendPacket(T)(T packet) {
 	ubyte[128 * 1024] buffer;
 	
 	auto socket = new Socket(AddressFamily.INET,  SocketType.STREAM);
-	socket.connect(new InternetAddress("localhost", 29100));
+	socket.connect(new InternetAddress("localhost", 29400));
 	scope(exit) {
 		socket.shutdown(SocketShutdown.BOTH);
 		socket.close();
@@ -56,6 +46,29 @@ static void sendPacket(T)(T packet) {
 	socket.send(wrap.data ~ outPacket.data);
 	
 	writeln(buffer[0 .. socket.receive(buffer)]);
+}
+
+static void marshal(T, U)(ref T outPacket, ref U structure){
+	foreach (i, ref part; structure.tupleof) {
+		enum attributes = __traits(getAttributes, structure.tupleof[i]);
+		
+		auto skip = false;
+		if (attributes.length > 0) {
+			foreach (attr; attributes)
+				if (is(typeof(attr) == pwbuild)) {
+					if (!(attr.min <= Config.Services.pwbuild
+						&& (attr.max == 0 || Config.Services.pwbuild <= attr.max)))
+						skip = true;
+					break;
+				}
+		}
+		if (skip) continue;
+		
+		static if (is(typeof(part) == struct)) {
+			marshal(outPacket, part);
+		}
+		else outPacket.append!(typeof(part))(part);
+	}
 }
 
 // Services

@@ -9,6 +9,7 @@ interface IAPIUser {
 @safe:
 	Json getName(int id);
 	Json getID(string name);
+	Json getRoleBase(uint id);
 }
 
 class APIUser : IAPIUser {
@@ -23,8 +24,20 @@ class APIUser : IAPIUser {
 			rolename: rolename
 		};
 		
-		sendPacket(request);
+		request.sendPacket();
 		
 		return serializeToJson(rolename);
+	}
+	
+	Json getRoleBase(uint id) {
+		import network.gnet.RoleBase;
+		
+		GetRoleBaseArg request = {
+			key: RoleId(id)
+		};
+		
+		request.sendPacket();
+		
+		return serializeToJson(id);
 	}
 }

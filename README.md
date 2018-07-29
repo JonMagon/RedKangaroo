@@ -25,6 +25,7 @@
 
 |Section: `services`|Type    |Default value|
 |-------------------|--------|-------------|
+|`pwbuild`          |`number`|`155`        |
 |`gdeliverydPort`   |`number`|`29100`      |
 |`gamedbdPort`      |`number`|`29400`      |
 
