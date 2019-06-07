@@ -1,3 +1,5 @@
+<p align="center"><b>RedKangaroo is no longer being developed.</b></p>
+
 <p align="center">
    <img src="https://raw.githubusercontent.com/JonMagon/RedKangaroo/master/assets/images/kangaroo-shape.png" width="128" height="128"/>
 </p>
